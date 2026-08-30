@@ -21,6 +21,34 @@ body {
   overflow-x: hidden;
 }
 
+/* ============================================================
+   SCROLLBAR — slim, themed (replaces the default browser one)
+   ============================================================ */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--soft) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--soft);
+  border-radius: 10px;
+  border: 2px solid var(--bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
 a {
   color: inherit;
   text-decoration: none;
