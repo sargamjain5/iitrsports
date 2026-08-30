@@ -39,7 +39,11 @@
 }
 
 /* ---- scope base ---- */
-.sv { color: var(--ink); font-family: var(--mono); line-height: 1.6; }
+/* Top padding clears the fixed 88px site header (74px under 900px). */
+.sv { color: var(--ink); font-family: var(--mono); line-height: 1.6; padding-top: 88px; }
+@media (max-width: 900px) {
+  .sv { padding-top: 74px; }
+}
 .sv .wrap { max-width: var(--max); margin: 0 auto; padding-left: var(--pad); padding-right: var(--pad); }
 
 /* utilities */

@@ -131,7 +131,7 @@ export default function SportsPage() {
         <section className="sports-grid">
           {sports.map((sport, index) => (
             <Link
-              href="/sports"
+              href="/sport"
               className={`sport-card ${
                 index === 0 ? "featured" : ""
               }`}
