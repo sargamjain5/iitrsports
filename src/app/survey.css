@@ -412,6 +412,53 @@
 /* stat cards — gentle lift so the count-up feels alive */
 .sv .stat:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -18px rgba(34, 40, 26, 0.5); }
 
+/* ---- horizontal (pinned) gallery ---- */
+.sv .hgal-section { position: relative; height: 100vh; overflow: hidden; }
+.sv .hgal-inner { height: 100%; display: flex; align-items: center; }
+.sv .hgal-track { display: flex; align-items: center; gap: 28px; padding: 0 var(--pad); will-change: transform; }
+.sv .hcard {
+  position: relative;
+  flex: none;
+  margin: 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 18px 40px -28px rgba(34, 40, 26, 0.6);
+  transition: transform 0.3s ease;
+}
+.sv .hcard img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sv .hcard .hcap {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  right: 14px;
+  z-index: 2;
+  font-size: 12px;
+  color: var(--on-accent);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.sv .hcard .hno { font-weight: 800; color: var(--accent); font-size: 11px; }
+.sv .hcard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20, 24, 14, 0.55), transparent 45%);
+  z-index: 1;
+}
+
+/* fallback (mobile / reduced motion): plain horizontal swipe */
+.sv .hgal-section.hgal-static { height: auto; overflow-x: auto; overflow-y: hidden; }
+.sv .hgal-section.hgal-static .hgal-inner { height: auto; padding: 20px 0 30px; }
+.sv .hgal-section.hgal-static .hcard { transform: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sv .hcard { transition: none; }
+}
+
 /* contact — copy-to-clipboard email */
 .sv .copy-email {
   position: relative;

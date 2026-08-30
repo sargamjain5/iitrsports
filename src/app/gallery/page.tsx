@@ -4,9 +4,14 @@ import { useState } from "react";
 import PageShell from "@/components/survey/PageShell";
 import PageHead from "@/components/survey/PageHead";
 import Reveal from "@/components/survey/Reveal";
+import HorizontalGallery, {
+  type HImage,
+} from "@/components/survey/HorizontalGallery";
 
 /* ============================================================
-   GALLERY — album-filtered tile grid (survey placeholder style)
+   GALLERY — two views the user can toggle between:
+   • Grid   — simple album-filtered tile grid
+   • Scroll — pinned horizontal, landonorris-style
    ============================================================ */
 
 const albums = ["Training", "Competitions", "Inter-IIT", "GC", "Sangram", "BTS"];
@@ -30,16 +35,63 @@ const captions: Record<string, string> = {
   BTS: "Behind the scenes",
 };
 
-// 18 tiles cycling through the albums, mirroring the design.
 const tiles = Array.from({ length: 18 }, (_, i) => {
   const album = albums[i % albums.length];
   return { no: String(i + 1).padStart(2, "0"), album, cap: captions[album] };
 });
 
-export default function GalleryPage() {
-  const [active, setActive] = useState("all");
+// Horizontal-scroll strip (uses the bundled sport images as mock photos).
+const scrollImages: HImage[] = [
+  { src: "/sports/Football.png", cap: "Inter-bhawan final" },
+  { src: "/sports/BasketBall.png", cap: "Court battle" },
+  { src: "/sports/SwimmingPool.jpg", cap: "Morning laps" },
+  { src: "/sports/Atheletics.png", cap: "Track finals" },
+  { src: "/sports/Hockey.png", cap: "Astro turf" },
+  { src: "/sports/LawnTennis.png", cap: "Baseline rally" },
+  { src: "/sports/volleyball.png", cap: "Spike & block" },
+  { src: "/sports/Badminton.png", cap: "Smash point" },
+  { src: "/sports/Chess.png", cap: "The endgame" },
+  { src: "/sports/Rowing.png", cap: "On the water" },
+  { src: "/sports/Squash.png", cap: "Four walls" },
+  { src: "/sports/Yoga.png", cap: "Yoga day" },
+];
 
+function GridView() {
+  const [active, setActive] = useState("all");
   const shown = tiles.filter((t) => active === "all" || t.album === active);
+
+  return (
+    <>
+      <Reveal className="filters" style={{ marginBottom: 24 }}>
+        <span className="flabel">Album</span>
+        {albumFilters.map((f) => (
+          <button
+            key={f.key}
+            type="button"
+            className={`filt ${active === f.key ? "on" : ""}`}
+            onClick={() => setActive(f.key)}
+          >
+            {f.label}
+          </button>
+        ))}
+      </Reveal>
+
+      <div className="gal">
+        {shown.map((t) => (
+          <div className="ph" key={t.no}>
+            <span className="no">
+              {t.no} · {t.album}
+            </span>
+            <span className="cap">{t.cap}</span>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+export default function GalleryPage() {
+  const [view, setView] = useState<"grid" | "scroll">("grid");
 
   return (
     <PageShell>
@@ -52,31 +104,33 @@ export default function GalleryPage() {
 
       <section style={{ paddingTop: 20 }}>
         <div className="wrap">
-          <Reveal className="filters" style={{ marginBottom: 24 }}>
-            <span className="flabel">Album</span>
-            {albumFilters.map((f) => (
+          {/* Grid / Scroll toggle */}
+          <div
+            style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20 }}
+          >
+            <div className="view-toggle">
               <button
-                key={f.key}
                 type="button"
-                className={`filt ${active === f.key ? "on" : ""}`}
-                onClick={() => setActive(f.key)}
+                className={view === "grid" ? "on" : ""}
+                onClick={() => setView("grid")}
               >
-                {f.label}
+                Grid
               </button>
-            ))}
-          </Reveal>
-
-          <div className="gal">
-            {shown.map((t) => (
-              <div className="ph" key={t.no}>
-                <span className="no">
-                  {t.no} · {t.album}
-                </span>
-                <span className="cap">{t.cap}</span>
-              </div>
-            ))}
+              <button
+                type="button"
+                className={view === "scroll" ? "on" : ""}
+                onClick={() => setView("scroll")}
+              >
+                Scroll
+              </button>
+            </div>
           </div>
+
+          {view === "grid" && <GridView />}
         </div>
+
+        {/* Horizontal view breaks out of the wrap for a full-bleed strip */}
+        {view === "scroll" && <HorizontalGallery images={scrollImages} />}
       </section>
     </PageShell>
   );
