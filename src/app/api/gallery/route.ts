@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { mockGallery } from "@/data/mockHome";
 
 export const runtime = "nodejs";
 
@@ -9,7 +10,17 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const cloudinaryConfigured = Boolean(
+  process.env.CLOUDINARY_CLOUD_NAME &&
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET
+);
+
 export async function GET() {
+  if (!cloudinaryConfigured) {
+    return NextResponse.json({ success: true, images: mockGallery });
+  }
+
   try {
     const result = await cloudinary.api.resources({
       type: "upload",
@@ -32,14 +43,9 @@ export async function GET() {
       images,
     });
   } catch (error) {
-    console.error("GALLERY FETCH ERROR:", error);
+    console.error("GALLERY FETCH ERROR, serving mock gallery:", error);
 
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch gallery",
-      },
-      { status: 500 }
-    );
+    // Graceful fallback rather than a 500 so the home page still renders.
+    return NextResponse.json({ success: true, images: mockGallery });
   }
 }
