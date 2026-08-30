@@ -16,8 +16,21 @@ const deptContacts = [
   { role: "Facility desk", value: "+91 1332 285 YYY" },
 ];
 
+const EMAIL = "sports@iitr.ac.in";
+
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // clipboard unavailable — no-op
+    }
+  };
 
   return (
     <PageShell>
@@ -42,7 +55,20 @@ export default function ContactPage() {
               <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
                 IIT Roorkee, Roorkee 247667
               </div>
-              <div style={{ fontSize: 13, marginTop: 12 }}>✉&nbsp; sports@iitr.ac.in</div>
+              <div style={{ fontSize: 13, marginTop: 12 }}>
+                ✉&nbsp;
+                <button
+                  type="button"
+                  className="copy-email"
+                  onClick={copyEmail}
+                  title="Copy email"
+                >
+                  {EMAIL}
+                  <span className={`copy-tip ${copied ? "show" : ""}`}>
+                    {copied ? "Copied ✓" : "Copy"}
+                  </span>
+                </button>
+              </div>
               <div style={{ fontSize: 13, marginTop: 4 }}>☎&nbsp; +91 1332 285 XXX</div>
             </Reveal>
 

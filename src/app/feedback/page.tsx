@@ -18,6 +18,7 @@ const types = [
 
 export default function FeedbackPage() {
   const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
   const [sent, setSent] = useState(false);
 
   return (
@@ -50,12 +51,13 @@ export default function FeedbackPage() {
 
             <div className="field">
               <label>Overall rating</label>
-              <div className="stars">
+              <div className="stars" onMouseLeave={() => setHover(0)}>
                 {[1, 2, 3, 4, 5].map((v) => (
                   <span
                     key={v}
-                    className={v <= rating ? "on" : ""}
+                    className={v <= (hover || rating) ? "on" : ""}
                     onClick={() => setRating(v)}
+                    onMouseEnter={() => setHover(v)}
                     role="button"
                     aria-label={`${v} star${v > 1 ? "s" : ""}`}
                   >

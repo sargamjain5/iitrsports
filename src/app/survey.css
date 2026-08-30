@@ -302,3 +302,235 @@
 @media (max-width: 820px) {
   .sv .split-2 { grid-template-columns: 1fr !important; }
 }
+
+/* ============================================================
+   MICRO-INTERACTIONS & ANIMATIONS
+   Subtle motion layered on top of the survey design. All of it
+   is disabled under prefers-reduced-motion (block at the end).
+   ============================================================ */
+
+@keyframes sv-pop {
+  0% { transform: scale(0.9); }
+  60% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+@keyframes sv-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* shared easing for interactive elements */
+.sv .card,
+.sv .person,
+.sv .stat,
+.sv .slot,
+.sv .filt,
+.sv .chip,
+.sv .btn,
+.sv .ev,
+.sv .cell,
+.sv .tab-btn,
+.sv .view-toggle button,
+.sv .sec-link,
+.sv .stars span,
+.sv .gal .ph,
+.sv .field input,
+.sv .field select,
+.sv .field textarea {
+  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 0.2s ease, background 0.2s ease, color 0.2s ease,
+    box-shadow 0.25s ease, opacity 0.2s ease;
+}
+
+/* cards — lift + soft shadow for interactive variants */
+.sv .card.hover:hover,
+.sv .card.link:hover,
+.sv .person:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px -18px rgba(34, 40, 26, 0.55);
+}
+
+/* buttons — press feedback + glow */
+.sv .btn { will-change: transform; }
+.sv .btn:hover { transform: translateY(-2px); }
+.sv .btn:active { transform: translateY(0) scale(0.98); }
+.sv .btn-primary:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 10px 22px -10px rgba(210, 79, 22, 0.65);
+}
+.sv .btn-ghost:active { transform: translateY(0) scale(0.98); }
+
+/* inputs — focus ring */
+.sv .field input:focus,
+.sv .field select:focus,
+.sv .field textarea:focus {
+  box-shadow: 0 0 0 3px rgba(210, 79, 22, 0.16);
+}
+
+/* filter chips + view toggle — nudge on hover, spring when active */
+.sv .filt:hover { transform: translateY(-1px); }
+.sv .filt.on { animation: sv-pop 0.28s ease; }
+.sv .view-toggle button:active { transform: scale(0.96); }
+
+/* booking slots — lift on hover, pop when selected */
+.sv .slot.available:hover { transform: translateY(-2px) scale(1.02); }
+.sv .slot.available.sel { animation: sv-pop 0.3s ease; }
+
+/* rating stars — grow on hover */
+.sv .stars span:hover { transform: scale(1.25); }
+
+/* tabs + section links — animated underline */
+.sv .tab-btn { position: relative; }
+.sv .tab-btn::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: -3px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.sv .tab-btn:hover::after { transform: scaleX(1); }
+.sv .tab-btn.active::after { transform: scaleX(0); }
+
+/* calendar — cell + event chip micro-interactions */
+.sv .grid7 .cell.has:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -16px rgba(34, 40, 26, 0.5); }
+.sv .chip-ev { transition: transform 0.15s ease, filter 0.2s ease; }
+.sv .grid7 .cell:hover .chip-ev { filter: saturate(1.15); }
+.sv .ev .ics:hover { transform: scale(1.1); }
+
+/* gallery tiles — deeper lift */
+.sv .gal .ph:hover { box-shadow: 0 16px 30px -20px rgba(34, 40, 26, 0.6); }
+
+/* timeline items — accent the dot on hover */
+.sv .tl-item::before { transition: transform 0.2s ease, background 0.2s ease; }
+.sv .tl-item:hover::before { transform: scale(1.35); background: var(--accent); }
+
+/* stat cards — gentle lift so the count-up feels alive */
+.sv .stat:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -18px rgba(34, 40, 26, 0.5); }
+
+/* ---- horizontal (pinned) gallery ---- */
+.sv .hgal-section {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  /* soft warm sand — a touch darker than the page for gentle contrast
+     (GSAP nudges it slightly deeper on scroll, staying light) */
+  background: #ded5bd;
+  color: var(--ink);
+}
+.sv .hgal-inner { height: 100%; display: flex; align-items: stretch; }
+.sv .hgal-track { display: flex; align-items: flex-start; height: 100%; gap: 56px; padding: 0; will-change: transform; }
+.sv .hcard {
+  position: relative;
+  flex: none;
+  margin: 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 18px 40px -28px rgba(34, 40, 26, 0.6);
+  transition: transform 0.3s ease;
+}
+.sv .hcard img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sv .hcard .hcap {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  right: 14px;
+  z-index: 2;
+  font-size: 12px;
+  color: var(--on-accent);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.sv .hcard .hno { font-weight: 800; color: var(--accent); font-size: 11px; }
+.sv .hcard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20, 24, 14, 0.55), transparent 45%);
+  z-index: 1;
+}
+
+/* fallback (mobile / reduced motion): plain horizontal swipe, tidy row.
+   Native scrollbar hidden; snap for a polished swipe feel. */
+.sv .hgal-section.hgal-static {
+  height: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.sv .hgal-section.hgal-static::-webkit-scrollbar { display: none; }
+.sv .hgal-section.hgal-static .hgal-inner { height: auto; }
+.sv .hgal-section.hgal-static .hgal-track { height: auto; align-items: flex-end; padding: 20px var(--pad) 30px; }
+.sv .hgal-section.hgal-static .hcard { margin-top: 0 !important; scroll-snap-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sv .hcard { transition: none; }
+}
+
+/* contact — copy-to-clipboard email */
+.sv .copy-email {
+  position: relative;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--line-2);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.sv .copy-email:hover { color: var(--accent); border-color: var(--accent); }
+.sv .copy-tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%) translateY(4px);
+  background: var(--ink);
+  color: var(--on-accent);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.sv .copy-email:hover .copy-tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+.sv .copy-tip.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sv .copy-tip { transition: none; }
+  .sv .card.hover:hover,
+  .sv .card.link:hover,
+  .sv .person:hover,
+  .sv .btn:hover,
+  .sv .btn:active,
+  .sv .filt:hover,
+  .sv .filt.on,
+  .sv .slot.available:hover,
+  .sv .slot.available.sel,
+  .sv .stars span:hover,
+  .sv .grid7 .cell.has:hover,
+  .sv .ev .ics:hover,
+  .sv .tl-item:hover::before,
+  .sv .stat:hover,
+  .sv .view-toggle button:active {
+    transform: none;
+    animation: none;
+    box-shadow: none;
+  }
+  .sv .tab-btn::after { transition: none; }
+}

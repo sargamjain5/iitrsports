@@ -2,8 +2,13 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Magnetic from "@/components/Magnetic";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /* ============================================================
    TYPES
@@ -121,6 +126,103 @@ export default function HomePage() {
   const [gallery, setGallery] = useState<GalleryImage[]>([]);
   const [galleryLoading, setGalleryLoading] = useState(true);
 
+  const contourRef = useRef<SVGSVGElement | null>(null);
+  const rootRef = useRef<HTMLElement | null>(null);
+
+  /* ============================================================
+     CONTOUR MOUSE PARALLAX
+     Nudges the hero contour lines opposite the cursor. Composes
+     with the CSS drift animation via the `translate` property.
+     ============================================================ */
+
+  useEffect(() => {
+    const el = contourRef.current;
+    if (!el) return;
+
+    if (window.matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+
+    let frame = 0;
+    const onMove = (e: MouseEvent) => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const x = (e.clientX / window.innerWidth - 0.5) * -60;
+        const y = (e.clientY / window.innerHeight - 0.5) * -42;
+        el.style.translate = `${x}px ${y}px`;
+      });
+    };
+
+    window.addEventListener("mousemove", onMove);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  /* ============================================================
+     GSAP — hero entrance + scroll reveals for static sections
+     ============================================================ */
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      const ease = "power3.out";
+
+      // Hero entrance timeline (runs on load).
+      gsap
+        .timeline({ defaults: { ease } })
+        .from(".hero .title", { y: 46, opacity: 0, duration: 0.9 })
+        .from(".hero .lead", { y: 26, opacity: 0, duration: 0.7 }, "-=0.5")
+        .from(
+          ".hero-buttons > *",
+          { y: 22, opacity: 0, duration: 0.55, stagger: 0.08 },
+          "-=0.4"
+        );
+
+      // Scroll-triggered reveals for static blocks.
+      gsap.utils.toArray<HTMLElement>(".reveal-up").forEach((el) => {
+        gsap.from(el, {
+          y: 42,
+          opacity: 0,
+          duration: 0.8,
+          ease,
+          scrollTrigger: { trigger: el, start: "top 86%" },
+        });
+      });
+
+      // Stat cards pop in with a stagger.
+      gsap.from(".stats-section .stat", {
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        ease,
+        stagger: 0.1,
+        scrollTrigger: { trigger: ".stats-section", start: "top 85%" },
+      });
+    }, rootRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  /* Reveal event cards once they've loaded in. */
+  useEffect(() => {
+    if (eventsLoading || events.length === 0) return;
+    if (window.matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(".event-card", {
+        y: 40,
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out",
+        stagger: 0.12,
+        scrollTrigger: { trigger: ".events-grid", start: "top 88%" },
+      });
+    }, rootRef);
+
+    return () => ctx.revert();
+  }, [eventsLoading, events.length]);
+
   /* ============================================================
      FETCH UPCOMING EVENTS
      ============================================================ */
@@ -188,7 +290,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main>
+    <main ref={rootRef}>
 
       {/* ======================================================
           NAVBAR
@@ -203,6 +305,7 @@ export default function HomePage() {
       <section className="hero">
 
         <svg
+          ref={contourRef}
           className="contour"
           viewBox="0 0 600 400"
           preserveAspectRatio="none"
@@ -238,33 +341,29 @@ export default function HomePage() {
 
           <div className="hero-buttons">
 
-            <Link
-              href="/booking"
-              className="btn btn-primary"
-            >
-              BOOK A FACILITY
-            </Link>
+            <Magnetic>
+              <Link href="/booking" className="btn btn-primary">
+                BOOK A FACILITY
+              </Link>
+            </Magnetic>
 
-            <Link
-              href="/events"
-              className="btn btn-ghost"
-            >
-              VIEW EVENTS
-            </Link>
+            <Magnetic>
+              <Link href="/events" className="btn btn-ghost">
+                VIEW EVENTS
+              </Link>
+            </Magnetic>
 
-            <Link
-              href="/gc"
-              className="btn btn-ghost"
-            >
-              GC STANDINGS
-            </Link>
+            <Magnetic>
+              <Link href="/gc" className="btn btn-ghost">
+                GC STANDINGS
+              </Link>
+            </Magnetic>
 
-            <Link
-              href="/contact"
-              className="btn btn-ghost"
-            >
-              CONTACT US
-            </Link>
+            <Magnetic>
+              <Link href="/contact" className="btn btn-ghost">
+                CONTACT US
+              </Link>
+            </Magnetic>
 
           </div>
 
@@ -311,7 +410,7 @@ export default function HomePage() {
 
 <section className="interiit-section">
   <div className="wrap">
-    <div className="interiit-card">
+    <div className="interiit-card reveal-up">
 
       <div className="interiit-content">
 
@@ -364,7 +463,7 @@ export default function HomePage() {
       <section className="section events-section">
         <div className="wrap">
 
-          <div className="sec-head">
+          <div className="sec-head reveal-up">
 
             <div>
               <div className="eyebrow section-eyebrow">
@@ -477,7 +576,7 @@ export default function HomePage() {
 
         <div className="wrap">
 
-          <div className="gallery-header">
+          <div className="gallery-header reveal-up">
 
             <div>
               <div className="eyebrow gallery-label">
