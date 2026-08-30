@@ -1,11 +1,16 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import "./sports.css";
 import "@/app/globals.css";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const sports = [
   {
@@ -102,8 +107,37 @@ const sports = [
 ];
 
 export default function SportsPage() {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      const ease = "power3.out";
+
+      // Header entrance on load.
+      gsap
+        .timeline({ defaults: { ease } })
+        .from(".sports-eyebrow", { y: 20, opacity: 0, duration: 0.6 })
+        .from(".sports-title", { y: 40, opacity: 0, duration: 0.8 }, "-=0.35")
+        .from(".sports-intro", { y: 24, opacity: 0, duration: 0.6 }, "-=0.45");
+
+      // Cards reveal on scroll, staggered.
+      gsap.from(".sport-card", {
+        y: 44,
+        opacity: 0,
+        duration: 0.6,
+        ease,
+        stagger: 0.07,
+        scrollTrigger: { trigger: ".sports-grid", start: "top 85%" },
+      });
+    }, rootRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <>
+    <div ref={rootRef}>
       <Navbar />
 
       <main className="sports-page">
@@ -183,6 +217,6 @@ export default function SportsPage() {
     
       </main>
       <Footer/>
-    </>
+    </div>
   );
 }
