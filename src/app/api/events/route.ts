@@ -1,16 +1,23 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB, isDbConfigured } from "@/lib/mongodb";
 import Event from "@/models/Events";
 import cloudinary from "@/lib/cloundinary";
+import { mockEvents } from "@/data/mockHome";
 
 export const runtime = "nodejs";
 
 /* ============================================================
    GET /api/events
-   Returns upcoming events, nearest date first
+   Returns upcoming events, nearest date first.
+   Falls back to mock data when the database is not configured
+   (or unreachable) so the app stays usable without a backend.
    ============================================================ */
 
 export async function GET() {
+  if (!isDbConfigured()) {
+    return NextResponse.json(mockEvents, { status: 200 });
+  }
+
   try {
     await connectDB();
 
@@ -27,16 +34,10 @@ export async function GET() {
       status: 200,
     });
   } catch (error) {
-    console.error("GET /api/events error:", error);
+    console.error("GET /api/events error, serving mock events:", error);
 
-    return NextResponse.json(
-      {
-        message: "Failed to fetch events",
-      },
-      {
-        status: 500,
-      }
-    );
+    // Graceful fallback rather than a 500 so the home page still renders.
+    return NextResponse.json(mockEvents, { status: 200 });
   }
 }
 

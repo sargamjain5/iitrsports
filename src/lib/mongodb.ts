@@ -2,10 +2,6 @@ import mongoose, { Mongoose } from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error("Please define MONGODB_URI in .env.local");
-}
-
 interface MongooseCache {
   conn: Mongoose | null;
   promise: Promise<Mongoose> | null;
@@ -23,7 +19,16 @@ const cached: MongooseCache = global.mongoose ?? {
 
 global.mongoose = cached;
 
+export function isDbConfigured(): boolean {
+  return Boolean(MONGODB_URI);
+}
+
 export async function connectDB(): Promise<Mongoose> {
+  if (!MONGODB_URI) {
+    // Thrown at call time (not import time) so callers can fall back gracefully.
+    throw new Error("MONGODB_URI is not defined — database is not configured");
+  }
+
   // Already connected
   if (cached.conn) {
     return cached.conn;

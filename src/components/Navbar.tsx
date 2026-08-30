@@ -18,7 +18,7 @@ export default function Navbar() {
         {/* DESKTOP NAV */}
         <nav className={`links ${menuOpen ? "open" : ""}`}>
 
-          <Link href="/home">
+          <Link href="/">
             HOME
           </Link>
 
@@ -34,12 +34,12 @@ export default function Navbar() {
             TURF
           </Link>
 
-          <Link href="/booking">
-            NSO
-          </Link>
-
           <Link href="/events">
             EVENTS
+          </Link>
+
+          <Link href="/gc">
+            GC
           </Link>
 
           <Link href="/gallery">
