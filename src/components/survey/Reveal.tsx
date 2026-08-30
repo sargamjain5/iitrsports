@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ElementType, type ReactNode } from "react";
+import Link from "next/link";
 
 /* ============================================================
    REVEAL
@@ -12,6 +13,7 @@ import { useEffect, useRef, type ElementType, type ReactNode } from "react";
 type RevealProps = {
   children: ReactNode;
   as?: ElementType;
+  href?: string;
   className?: string;
   delay?: number;
   style?: React.CSSProperties;
@@ -19,12 +21,15 @@ type RevealProps = {
 
 export default function Reveal({
   children,
-  as: Tag = "div",
+  as,
+  href,
   className = "",
   delay,
   style,
   ...rest
 }: RevealProps) {
+  // Render a Next.js Link when href is provided, otherwise the given tag.
+  const Tag: ElementType = href ? Link : as ?? "div";
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -79,6 +84,7 @@ export default function Reveal({
   return (
     <Tag
       ref={ref}
+      href={href}
       className={`rv ${className}`.trim()}
       style={delay !== undefined ? { transitionDelay: `${delay}ms`, ...style } : style}
       {...rest}
