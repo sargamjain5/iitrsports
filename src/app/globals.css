@@ -135,6 +135,7 @@ main {
 }
 
 .links a {
+  position: relative;
   color: #59604c;
   font-size: 14px;
   font-weight: 500;
@@ -142,6 +143,25 @@ main {
   transition:
     color 0.2s ease,
     transform 0.2s ease;
+}
+
+/* animated underline (skips the CTA button) */
+.links a:not(.nav-cta)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.links a:not(.nav-cta):hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .links a:hover {
@@ -155,11 +175,31 @@ main {
   padding: 15px 24px;
   border-radius: 11px;
   font-weight: 700 !important;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
 }
 
 .nav-cta:hover {
   background: var(--accent-dark);
   transform: translateY(-2px) !important;
+  box-shadow: 0 10px 22px -10px rgba(210, 79, 22, 0.7);
+}
+
+.brand {
+  transition: letter-spacing 0.25s ease, color 0.2s ease;
+}
+
+.brand:hover {
+  letter-spacing: 3.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .links a:not(.nav-cta)::after { transition: none; }
+  .links a:hover,
+  .nav-cta:hover { transform: none !important; }
+  .brand:hover { letter-spacing: 3px; }
 }
 
 .menu-btn {
