@@ -16,11 +16,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 export type HImage = { src: string; cap: string };
 
-// cycled per tile so the strip feels hand-placed and scattered across
-// the full viewport height (top offsets are in vh).
-const WIDTHS = [300, 360, 280, 340, 320];
-const HEIGHTS = [46, 34, 52, 40, 44]; // vh
-const TOPS = [6, 34, 12, 44, 20, 38]; // vh from the top of the strip
+// Cycled per tile so the strip feels hand-placed. Width + height share
+// the same index so small tiles are small in both dims (thumbnail) and
+// large tiles are large features — like the landonorris scatter. TOPS
+// (vh from the top of the strip) spread them across the viewport height.
+const WIDTHS = [230, 400, 190, 300, 460, 250, 340]; // px
+const HEIGHTS = [30, 54, 22, 40, 66, 34, 46]; // vh
+const TOPS = [8, 36, 14, 4, 24, 52, 20]; // vh
 
 export default function HorizontalGallery({ images }: { images: HImage[] }) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -43,20 +45,24 @@ export default function HorizontalGallery({ images }: { images: HImage[] }) {
     const ctx = gsap.context(() => {
       const distance = () => track.scrollWidth - window.innerWidth;
 
-      const tween = gsap.to(track, {
-        x: () => -distance(),
-        ease: "none",
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => "+=" + distance(),
+          pin: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
       });
 
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: () => "+=" + distance(),
-        pin: true,
-        scrub: 1,
-        animation: tween,
-        invalidateOnRefresh: true,
-      });
+      // slide the strip left→right and deepen the background together
+      tl.to(track, { x: () => -distance(), ease: "none" }, 0).fromTo(
+        section,
+        { backgroundColor: "#e3dbc5" },
+        { backgroundColor: "#d3c9ab", ease: "none" },
+        0
+      );
     }, sectionRef);
 
     return () => ctx.revert();

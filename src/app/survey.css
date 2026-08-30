@@ -413,9 +413,17 @@
 .sv .stat:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -18px rgba(34, 40, 26, 0.5); }
 
 /* ---- horizontal (pinned) gallery ---- */
-.sv .hgal-section { position: relative; height: 100vh; overflow: hidden; }
+.sv .hgal-section {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  /* soft warm sand — a touch darker than the page for gentle contrast
+     (GSAP nudges it slightly deeper on scroll, staying light) */
+  background: #ded5bd;
+  color: var(--ink);
+}
 .sv .hgal-inner { height: 100%; display: flex; align-items: stretch; }
-.sv .hgal-track { display: flex; align-items: flex-start; height: 100%; gap: 28px; padding: 0; will-change: transform; }
+.sv .hgal-track { display: flex; align-items: flex-start; height: 100%; gap: 56px; padding: 0; will-change: transform; }
 .sv .hcard {
   position: relative;
   flex: none;
