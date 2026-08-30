@@ -237,6 +237,40 @@ main {
   height: 700px;
   opacity: 0.75;
   pointer-events: none;
+
+  /* JS sets `translate` for mouse parallax; `transform` runs the
+     ambient drift, so the two compose without fighting. */
+  translate: 0 0;
+  transition: translate 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation: contour-drift 11s ease-in-out infinite alternate;
+  will-change: transform, translate;
+}
+
+@keyframes contour-drift {
+  from { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+  to { transform: translate3d(-64px, 40px, 0) rotate(-4deg) scale(1.06); }
+}
+
+/* each stroke breathes out of phase for a flowing, wave-like motion */
+.contour path {
+  transform-box: view-box;
+  transform-origin: center;
+  animation: contour-sway 7s ease-in-out infinite alternate;
+}
+.contour path:nth-child(2) { animation-delay: -1.4s; animation-duration: 8s; }
+.contour path:nth-child(3) { animation-delay: -2.8s; animation-duration: 9s; }
+.contour path:nth-child(4) { animation-delay: -4.2s; animation-duration: 7.5s; }
+.contour path:nth-child(5) { animation-delay: -5.6s; animation-duration: 8.5s; }
+
+@keyframes contour-sway {
+  from { transform: translate(0, 0); }
+  to { transform: translate(34px, -12px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contour,
+  .contour path { animation: none; }
+  .contour { translate: 0 0 !important; transition: none; }
 }
 
 .hero-eyebrow {

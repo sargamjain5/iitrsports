@@ -2,7 +2,7 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 /* ============================================================
@@ -121,6 +121,37 @@ export default function HomePage() {
   const [gallery, setGallery] = useState<GalleryImage[]>([]);
   const [galleryLoading, setGalleryLoading] = useState(true);
 
+  const contourRef = useRef<SVGSVGElement | null>(null);
+
+  /* ============================================================
+     CONTOUR MOUSE PARALLAX
+     Nudges the hero contour lines opposite the cursor. Composes
+     with the CSS drift animation via the `translate` property.
+     ============================================================ */
+
+  useEffect(() => {
+    const el = contourRef.current;
+    if (!el) return;
+
+    if (window.matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+
+    let frame = 0;
+    const onMove = (e: MouseEvent) => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const x = (e.clientX / window.innerWidth - 0.5) * -60;
+        const y = (e.clientY / window.innerHeight - 0.5) * -42;
+        el.style.translate = `${x}px ${y}px`;
+      });
+    };
+
+    window.addEventListener("mousemove", onMove);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
   /* ============================================================
      FETCH UPCOMING EVENTS
      ============================================================ */
@@ -203,6 +234,7 @@ export default function HomePage() {
       <section className="hero">
 
         <svg
+          ref={contourRef}
           className="contour"
           viewBox="0 0 600 400"
           preserveAspectRatio="none"
