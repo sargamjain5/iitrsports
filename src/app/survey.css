@@ -414,8 +414,8 @@
 
 /* ---- horizontal (pinned) gallery ---- */
 .sv .hgal-section { position: relative; height: 100vh; overflow: hidden; }
-.sv .hgal-inner { height: 100%; display: flex; align-items: center; }
-.sv .hgal-track { display: flex; align-items: center; gap: 28px; padding: 0 var(--pad); will-change: transform; }
+.sv .hgal-inner { height: 100%; display: flex; align-items: stretch; }
+.sv .hgal-track { display: flex; align-items: flex-start; height: 100%; gap: 28px; padding: 0 var(--pad); will-change: transform; }
 .sv .hcard {
   position: relative;
   flex: none;
@@ -450,10 +450,11 @@
   z-index: 1;
 }
 
-/* fallback (mobile / reduced motion): plain horizontal swipe */
+/* fallback (mobile / reduced motion): plain horizontal swipe, tidy row */
 .sv .hgal-section.hgal-static { height: auto; overflow-x: auto; overflow-y: hidden; }
-.sv .hgal-section.hgal-static .hgal-inner { height: auto; padding: 20px 0 30px; }
-.sv .hgal-section.hgal-static .hcard { transform: none !important; }
+.sv .hgal-section.hgal-static .hgal-inner { height: auto; }
+.sv .hgal-section.hgal-static .hgal-track { height: auto; align-items: flex-end; padding: 20px var(--pad) 30px; }
+.sv .hgal-section.hgal-static .hcard { margin-top: 0 !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .sv .hcard { transition: none; }

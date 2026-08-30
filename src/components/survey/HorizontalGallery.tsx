@@ -16,10 +16,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 export type HImage = { src: string; cap: string };
 
-// cycled per tile so the strip feels hand-placed
+// cycled per tile so the strip feels hand-placed and scattered across
+// the full viewport height (top offsets are in vh).
 const WIDTHS = [300, 360, 280, 340, 320];
-const HEIGHTS = [380, 260, 440, 300, 340];
-const OFFSETS = [0, 70, -30, 40, -60, 20];
+const HEIGHTS = [46, 34, 52, 40, 44]; // vh
+const TOPS = [6, 34, 12, 44, 20, 38]; // vh from the top of the strip
 
 export default function HorizontalGallery({ images }: { images: HImage[] }) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -71,8 +72,8 @@ export default function HorizontalGallery({ images }: { images: HImage[] }) {
               key={`${img.src}-${i}`}
               style={{
                 width: WIDTHS[i % WIDTHS.length],
-                height: HEIGHTS[i % HEIGHTS.length],
-                transform: `translateY(${OFFSETS[i % OFFSETS.length]}px)`,
+                height: `${HEIGHTS[i % HEIGHTS.length]}vh`,
+                marginTop: `${TOPS[i % TOPS.length]}vh`,
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
