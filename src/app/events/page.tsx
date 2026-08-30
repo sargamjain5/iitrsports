@@ -4,9 +4,12 @@ import { useState } from "react";
 import PageShell from "@/components/survey/PageShell";
 import PageHead from "@/components/survey/PageHead";
 import Reveal from "@/components/survey/Reveal";
+import Calendar from "@/components/survey/Calendar";
 
 /* ============================================================
-   EVENTS TIMELINE — filterable season fixtures + recent results
+   EVENTS — Calendar / Timeline views.
+   Timeline: filterable season fixtures + recent results.
+   Calendar: month grid + agenda of the season plan.
    ============================================================ */
 
 const filters = ["all", "Football", "Basketball", "Athletics", "Swimming", "Cricket"];
@@ -51,82 +54,110 @@ const results = [
   { label: "Basketball · Ganga v Sarojini", score: "61–54" },
 ];
 
-export default function EventsPage() {
+function TimelineView() {
   const [active, setActive] = useState("all");
-
   const shown = timeline.filter((t) => active === "all" || t.cat === active);
+
+  return (
+    <>
+      <div className="filters" style={{ marginBottom: 26 }}>
+        <span className="flabel">Sport</span>
+        {filters.map((f) => (
+          <button
+            key={f}
+            type="button"
+            className={`filt ${active === f ? "on" : ""}`}
+            onClick={() => setActive(f)}
+          >
+            {f === "all" ? "All" : f}
+          </button>
+        ))}
+      </div>
+
+      <div
+        className="split-2"
+        style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 30 }}
+      >
+        <div className="timeline">
+          {shown.map((t) => (
+            <div className="tl-item" key={t.title}>
+              <div className="tl-date">{t.date}</div>
+              <div className="tl-title">{t.title}</div>
+              <div className="tl-desc">{t.desc}</div>
+            </div>
+          ))}
+          {shown.length === 0 && (
+            <div className="tl-item">
+              <div className="tl-desc">No fixtures for this sport yet.</div>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <div className="eyebrow" style={{ marginBottom: 14 }}>
+            Recent results
+          </div>
+          {results.map((r, i) => (
+            <div
+              key={r.label}
+              className="card"
+              style={{
+                marginBottom: i < results.length - 1 ? 10 : 0,
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <span style={{ fontSize: 13 }}>{r.label}</span>
+              <b>{r.score}</b>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default function EventsPage() {
+  const [view, setView] = useState<"calendar" | "timeline">("calendar");
 
   return (
     <PageShell>
       <PageHead
         crumbs={[{ label: "Home", href: "/" }, { label: "Events" }]}
         eyebrow="Season plan · Spring 2025–26"
-        title="Events timeline"
-        lead="Every fixture and meet across the season — filter by sport, check details, and follow the results as they land."
+        title="What's on"
+        lead="Every fixture, tournament and key date across the season — switch between the calendar and the live fixture timeline, filter, and follow the results."
       />
 
       <section style={{ paddingTop: 20 }}>
         <div className="wrap">
-          <Reveal className="filters" style={{ marginBottom: 26 }}>
-            <span className="flabel">Sport</span>
-            {filters.map((f) => (
+          {/* Calendar / Timeline switch */}
+          <Reveal
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: 20,
+            }}
+          >
+            <div className="view-toggle">
               <button
-                key={f}
                 type="button"
-                className={`filt ${active === f ? "on" : ""}`}
-                onClick={() => setActive(f)}
+                className={view === "calendar" ? "on" : ""}
+                onClick={() => setView("calendar")}
               >
-                {f === "all" ? "All" : f}
+                Calendar
               </button>
-            ))}
+              <button
+                type="button"
+                className={view === "timeline" ? "on" : ""}
+                onClick={() => setView("timeline")}
+              >
+                Timeline
+              </button>
+            </div>
           </Reveal>
 
-          <div
-            className="split-2"
-            style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 30 }}
-          >
-            <div className="timeline">
-              {shown.map((t) => (
-                <div className="tl-item" key={t.title}>
-                  <div className="tl-date">{t.date}</div>
-                  <div className="tl-title">{t.title}</div>
-                  <div className="tl-desc">{t.desc}</div>
-                </div>
-              ))}
-              {shown.length === 0 && (
-                <div className="tl-item">
-                  <div className="tl-desc">No fixtures for this sport yet.</div>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <Reveal className="eyebrow" style={{ marginBottom: 14 }}>
-                Recent results
-              </Reveal>
-              {results.map((r, i) => (
-                <Reveal
-                  key={r.label}
-                  className="card"
-                  style={{
-                    marginBottom: i < results.length - 1 ? 10 : 0,
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span style={{ fontSize: 13 }}>{r.label}</span>
-                  <b>{r.score}</b>
-                </Reveal>
-              ))}
-              <Reveal
-                href="/gallery"
-                className="sec-link"
-                style={{ display: "inline-block", marginTop: 18 }}
-              >
-                Event gallery →
-              </Reveal>
-            </div>
-          </div>
+          {view === "calendar" ? <Calendar /> : <TimelineView />}
         </div>
       </section>
     </PageShell>
