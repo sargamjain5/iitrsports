@@ -35,9 +35,37 @@ const captions: Record<string, string> = {
   BTS: "Behind the scenes",
 };
 
+// Photo pool: real IIT Roorkee Yoga-Day 2025 shots (pulled from the
+// official sports page) mixed with the bundled sport images.
+const photoPool = [
+  "/gallery/yoga-1.jpeg",
+  "/sports/Football.png",
+  "/gallery/yoga-4.jpeg",
+  "/sports/BasketBall.png",
+  "/gallery/yoga-6.jpeg",
+  "/sports/Hockey.png",
+  "/gallery/yoga-8.jpeg",
+  "/sports/Atheletics.png",
+  "/gallery/yoga-5.jpeg",
+  "/sports/volleyball.png",
+  "/gallery/yoga-12.jpeg",
+  "/sports/LawnTennis.png",
+  "/gallery/yoga-9.jpeg",
+  "/sports/Badminton.png",
+  "/gallery/yoga-11.jpeg",
+  "/sports/Chess.png",
+  "/gallery/yoga-3.jpeg",
+  "/sports/Rowing.png",
+];
+
 const tiles = Array.from({ length: 18 }, (_, i) => {
   const album = albums[i % albums.length];
-  return { no: String(i + 1).padStart(2, "0"), album, cap: captions[album] };
+  return {
+    no: String(i + 1).padStart(2, "0"),
+    album,
+    cap: captions[album],
+    src: photoPool[i % photoPool.length],
+  };
 });
 
 // Horizontal-scroll strip (uses the bundled sport images as mock photos).
@@ -79,6 +107,8 @@ function GridView() {
       <div className="gal">
         {shown.map((t) => (
           <div className="ph" key={t.no}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={t.src} alt={`${t.album} — ${t.cap}`} loading="lazy" />
             <span className="no">
               {t.no} · {t.album}
             </span>
