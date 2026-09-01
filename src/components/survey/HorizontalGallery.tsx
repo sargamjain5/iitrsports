@@ -20,9 +20,11 @@ export type HImage = { src: string; cap: string };
 // the same index so small tiles are small in both dims (thumbnail) and
 // large tiles are large features — like the landonorris scatter. TOPS
 // (vh from the top of the strip) spread them across the viewport height.
-const WIDTHS = [230, 400, 190, 300, 460, 250, 340]; // px
-const HEIGHTS = [30, 54, 22, 40, 66, 34, 46]; // vh
-const TOPS = [8, 36, 14, 4, 24, 52, 20]; // vh
+// Wide height range (18vh thumbnails → 82vh hero tiles) for a dramatic,
+// scattered read.
+const WIDTHS = [220, 380, 170, 300, 480, 240, 360]; // px
+const HEIGHTS = [26, 58, 18, 44, 82, 34, 66]; // vh
+const TOPS = [10, 30, 8, 2, 12, 54, 22]; // vh
 
 export default function HorizontalGallery({ images }: { images: HImage[] }) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -44,28 +46,61 @@ export default function HorizontalGallery({ images }: { images: HImage[] }) {
 
     const ctx = gsap.context(() => {
       const distance = () => track.scrollWidth - window.innerWidth;
+      const cards = track.querySelectorAll<HTMLElement>(".hcard");
+
+      // Start hidden — the strip reveals once the section takes over the screen.
+      gsap.set(cards, { autoAlpha: 0, y: 60, scale: 0.94 });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => "+=" + distance(),
+          // extra ~1 viewport of scroll is spent on the intro reveal
+          end: () => "+=" + (distance() + window.innerHeight),
           pin: true,
           scrub: 1,
           invalidateOnRefresh: true,
+          // slide the navbar away while the immersive strip is on screen
+          onToggle: (self) =>
+            document.documentElement.classList.toggle(
+              "gal-immersive",
+              self.isActive
+            ),
         },
       });
 
-      // slide the strip left→right and deepen the background together
-      tl.to(track, { x: () => -distance(), ease: "none" }, 0).fromTo(
+      // 1) background sweeps in to fill the page, then the images rise in…
+      tl.fromTo(
         section,
-        { backgroundColor: "#e3dbc5" },
-        { backgroundColor: "#d3c9ab", ease: "none" },
+        { backgroundColor: "#efe9d6" },
+        { backgroundColor: "#e3dbc5", ease: "none", duration: 0.5 },
         0
+      ).to(
+        cards,
+        {
+          autoAlpha: 1,
+          y: 0,
+          scale: 1,
+          ease: "power2.out",
+          stagger: 0.04,
+          duration: 0.5,
+        },
+        0.15
       );
+
+      // 2) …then the strip scrubs left→right, deepening the sand as it goes.
+      tl.to(track, { x: () => -distance(), ease: "none", duration: 2.4 }, 0.65)
+        .to(
+          section,
+          { backgroundColor: "#d3c9ab", ease: "none", duration: 2.4 },
+          0.65
+        );
     }, sectionRef);
 
-    return () => ctx.revert();
+    return () => {
+      document.documentElement.classList.remove("gal-immersive");
+      ctx.revert();
+    };
   }, [images]);
 
   return (

@@ -140,6 +140,20 @@ main {
   -webkit-backdrop-filter: blur(18px);
 
   border-bottom: 1px solid #9da08e;
+
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s ease;
+}
+
+/* Immersive gallery: while the pinned horizontal strip is active the
+   navbar slides away so nothing but the images fills the screen. */
+html.gal-immersive .site-header {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header { transition: none; }
 }
 
 .nav {
