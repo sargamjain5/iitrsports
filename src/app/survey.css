@@ -417,13 +417,16 @@
   position: relative;
   height: 100vh;
   overflow: hidden;
+  /* tile widths scale up on large monitors so the strip doesn't look sparse */
+  --hscale: 1;
   /* soft warm sand — a touch darker than the page for gentle contrast
      (GSAP nudges it slightly deeper on scroll, staying light) */
   background: #ded5bd;
   color: var(--ink);
 }
 .sv .hgal-inner { height: 100%; display: flex; align-items: stretch; }
-.sv .hgal-track { display: flex; align-items: flex-start; height: 100%; gap: 56px; padding: 0; will-change: transform; }
+/* gap is set per-card (randomised) via inline margin-left, not a fixed value */
+.sv .hgal-track { display: flex; align-items: flex-start; height: 100%; gap: 0; padding: 0 clamp(24px, 4vw, 72px); will-change: transform; }
 .sv .hcard {
   position: relative;
   flex: none;
@@ -533,4 +536,15 @@
     box-shadow: none;
   }
   .sv .tab-btn::after { transition: none; }
+}
+
+/* ---- large screens (27" monitors & up) ---- */
+/* Let the survey pages breathe wider instead of a narrow 1200px column. */
+@media (min-width: 1600px) {
+  .sv { --max: 1440px; }
+  .sv .hgal-section { --hscale: 1.25; }
+}
+@media (min-width: 2100px) {
+  .sv { --max: 1680px; }
+  .sv .hgal-section { --hscale: 1.5; }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -22,9 +22,12 @@ export type HImage = { src: string; cap: string };
 // (vh from the top of the strip) spread them across the viewport height.
 // Wide height range (18vh thumbnails → 82vh hero tiles) for a dramatic,
 // scattered read.
-const WIDTHS = [220, 380, 170, 300, 480, 240, 360]; // px
+const WIDTHS = [220, 380, 170, 300, 480, 240, 360]; // px (scaled by --hscale on big screens)
 const HEIGHTS = [26, 58, 18, 44, 82, 34, 66]; // vh
 const TOPS = [10, 30, 8, 2, 12, 54, 22]; // vh
+// Horizontal spacing before each tile — varied so the strip feels
+// hand-placed, but kept moderate so it never reads as empty.
+const GAPS = [44, 26, 60, 30, 52, 22, 40]; // px
 
 export default function HorizontalGallery({ images }: { images: HImage[] }) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -111,11 +114,15 @@ export default function HorizontalGallery({ images }: { images: HImage[] }) {
             <figure
               className="hcard"
               key={`${img.src}-${i}`}
-              style={{
-                width: WIDTHS[i % WIDTHS.length],
-                height: `${HEIGHTS[i % HEIGHTS.length]}vh`,
-                marginTop: `${TOPS[i % TOPS.length]}vh`,
-              }}
+              style={
+                {
+                  "--w": `${WIDTHS[i % WIDTHS.length]}px`,
+                  width: "calc(var(--w) * var(--hscale, 1))",
+                  height: `${HEIGHTS[i % HEIGHTS.length]}vh`,
+                  marginTop: `${TOPS[i % TOPS.length]}vh`,
+                  marginLeft: i === 0 ? 0 : GAPS[i % GAPS.length],
+                } as CSSProperties
+              }
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={img.src} alt={img.cap} loading="lazy" />
