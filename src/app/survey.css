@@ -218,8 +218,12 @@
 .sv .gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .sv .gal .ph { aspect-ratio: 4 / 3; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); position: relative; overflow: hidden; display: flex; align-items: flex-end; padding: 14px; transition: transform 0.2s, border-color 0.2s; }
 .sv .gal .ph:hover { transform: translateY(-3px); border-color: var(--accent); }
-.sv .gal .ph .cap { font-size: 12px; color: var(--muted); position: relative; z-index: 2; }
-.sv .gal .ph .no { position: absolute; top: 12px; left: 14px; font-size: 11px; color: var(--dim); }
+/* real photo fills the tile; gradient keeps the caption/number legible */
+.sv .gal .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; transition: transform 0.4s ease; }
+.sv .gal .ph:hover img { transform: scale(1.05); }
+.sv .gal .ph::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(20, 24, 14, 0.62), transparent 55%); }
+.sv .gal .ph .cap { font-size: 12px; color: var(--on-accent); position: relative; z-index: 2; text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5); }
+.sv .gal .ph .no { position: absolute; top: 12px; left: 14px; font-size: 11px; color: var(--on-accent); z-index: 2; text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5); }
 
 /* timeline */
 .sv .timeline { position: relative; padding-left: 28px; }
@@ -236,6 +240,10 @@
 .sv .person .av { width: 42px; height: 42px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); margin-bottom: 13px; font-size: 13px; }
 .sv .person .pn { font-weight: 500; font-size: 14px; }
 .sv .person .pr { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.sv .person a.person-link { display: block; word-break: break-all; transition: color 0.2s; }
+.sv .person a.person-link:hover { color: var(--accent); }
+/* faculty headshot — larger circular photo, falls back to the initials chip */
+.sv .person .av-photo { width: 72px; height: 72px; object-fit: cover; object-position: top center; background: var(--surface-2); }
 
 /* map placeholder */
 .sv .map { aspect-ratio: 16 / 7; border: 1px solid var(--line-2); border-radius: var(--r); background:
@@ -417,13 +425,16 @@
   position: relative;
   height: 100vh;
   overflow: hidden;
+  /* tile widths scale up on large monitors so the strip doesn't look sparse */
+  --hscale: 1;
   /* soft warm sand — a touch darker than the page for gentle contrast
      (GSAP nudges it slightly deeper on scroll, staying light) */
   background: #ded5bd;
   color: var(--ink);
 }
 .sv .hgal-inner { height: 100%; display: flex; align-items: stretch; }
-.sv .hgal-track { display: flex; align-items: flex-start; height: 100%; gap: 56px; padding: 0; will-change: transform; }
+/* gap is set per-card (randomised) via inline margin-left, not a fixed value */
+.sv .hgal-track { display: flex; align-items: flex-start; height: 100%; gap: 0; padding: 0 clamp(24px, 4vw, 72px); will-change: transform; }
 .sv .hcard {
   position: relative;
   flex: none;
@@ -533,4 +544,15 @@
     box-shadow: none;
   }
   .sv .tab-btn::after { transition: none; }
+}
+
+/* ---- large screens (27" monitors & up) ---- */
+/* Let the survey pages breathe wider instead of a narrow 1200px column. */
+@media (min-width: 1600px) {
+  .sv { --max: 1440px; }
+  .sv .hgal-section { --hscale: 1.25; }
+}
+@media (min-width: 2100px) {
+  .sv { --max: 1680px; }
+  .sv .hgal-section { --hscale: 1.5; }
 }

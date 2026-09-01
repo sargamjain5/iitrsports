@@ -140,6 +140,20 @@ main {
   -webkit-backdrop-filter: blur(18px);
 
   border-bottom: 1px solid #9da08e;
+
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s ease;
+}
+
+/* Immersive gallery: while the pinned horizontal strip is active the
+   navbar slides away so nothing but the images fills the screen. */
+html.gal-immersive .site-header {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header { transition: none; }
 }
 
 .nav {
@@ -1352,5 +1366,32 @@ footer {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   LARGE SCREENS — 27" monitors & up
+   The layout was tuned around ~1190px; on very wide displays that
+   leaves the content marooned in a narrow column. Widen the
+   container and open up vertical rhythm so the page fills the glass.
+   ============================================================ */
+
+@media (min-width: 1600px) {
+  .wrap {
+    width: min(1440px, calc(100% - 128px));
+  }
+
+  .section {
+    padding: 120px 0;
+  }
+}
+
+@media (min-width: 2100px) {
+  .wrap {
+    width: min(1680px, calc(100% - 200px));
+  }
+
+  .section {
+    padding: 150px 0;
   }
 }

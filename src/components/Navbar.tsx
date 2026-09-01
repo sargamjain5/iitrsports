@@ -42,6 +42,10 @@ export default function Navbar() {
             GC
           </Link>
 
+          <Link href="/faculty">
+            FACULTY
+          </Link>
+
           <Link href="/gallery">
             GALLERY
           </Link>
