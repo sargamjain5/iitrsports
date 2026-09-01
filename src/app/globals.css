@@ -1368,3 +1368,30 @@ footer {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   LARGE SCREENS — 27" monitors & up
+   The layout was tuned around ~1190px; on very wide displays that
+   leaves the content marooned in a narrow column. Widen the
+   container and open up vertical rhythm so the page fills the glass.
+   ============================================================ */
+
+@media (min-width: 1600px) {
+  .wrap {
+    width: min(1440px, calc(100% - 128px));
+  }
+
+  .section {
+    padding: 120px 0;
+  }
+}
+
+@media (min-width: 2100px) {
+  .wrap {
+    width: min(1680px, calc(100% - 200px));
+  }
+
+  .section {
+    padding: 150px 0;
+  }
+}
